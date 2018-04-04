@@ -15,6 +15,7 @@ You can also use the sealed modifier on a method or property that overrides a vi
 
 기본클래스에 메서드나 가상 메서드나 속성을 재정의하는 속성에서 sealed 한정자를 사용할 수 있습니다. 클래스에서 클래스를 파생시키고 특정 가상 메서드나 속성을 재정의하지 못하게 한다.
 
+### Example
 ~~~
 class X
 {
@@ -48,7 +49,29 @@ When applied to a method or property, the sealed modifier must always be used wi
 메서드나 속성에 적용되면 sealed 한정자는 항상 override와 함께 사용되야 합니다.
 
 Because structs are implicitly sealed, they cannot be inherited.
+구조체는 암시적으로 봉인되기 때문에 상속될 수 없습니다.
 
 For more information, see Inheritance.
 
 For more examples, see Abstract and Sealed Classes and Class Members.
+
+### Example
+~~~
+sealed class SealedClass
+{
+    public int x;
+    public int y;
+}
+
+class SealedTest2
+{
+    static void Main()
+    {
+        SealedClass sc = new SealedClass();
+        sc.x = 110;
+        sc.y = 150;
+        Console.WriteLine("x = {0}, y = {1}", sc.x, sc.y);
+    }
+}
+// Output: x = 110, y = 150
+~~~
