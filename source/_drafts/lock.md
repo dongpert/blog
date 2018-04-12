@@ -4,7 +4,7 @@ tags:
 ---
 The lock keyword marks a statement block as a critical section by obtaining the mutual-exclusion lock for a given object, executing a statement, and then releasing the lock. The following example includes a lock statement.
 
-lcok 키워드는 주어진 객체에 대해 상호 베타적 잠금을 획득하여 구문을 실행하고 잠금을 해제ㅎ여 구문 블록을 임계 영역으로 표시합니다.
+lcok 키워드는 주어진 객체에 대해 상호 베타적 잠금을 획득하여 구문을 실행하고 잠금을 해제하여 구문 블록을 임계 영역으로 표시합니다.
 
 ~~~
 class Account  

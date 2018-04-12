@@ -1,0 +1,4 @@
+---
+title: lazy-initialization
+tags:
+---
