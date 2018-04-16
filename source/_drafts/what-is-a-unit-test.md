@@ -90,3 +90,323 @@ public bool CompareStrings_Test()
     Assert.AreEqual(expected, actual);
 }
 ~~~
+Now your unit test is going to encounter a System.NullReferenceExecption. Assuming you write Unit Tests before you release your code to a customer, you will catch the bug long before the code reaches a customer and fix it.
+
+Here is the fixed function.
+~~~
+public bool CompareStrings(String inStr1, String inStr2)
+{
+    // If either input values are null, return false
+    if (null == inStr1 || null == inStr2)
+        return false;
+    return inStr1.Equals(inStr2);
+}
+~~~
+## Unit Test Example
+Here is an example object called PersonName. We tried to make it have a little more meat to this object than just a FirstName, LastName password.
+
+**PersonName.cs**
+~~~
+using System;
+using System.Collections.Generic;
+using System.Text;
+ 
+namespace PersonExample
+{
+    ///<summary>
+    /// An Ojbect representing a Person
+    /// </summary>
+    public class PersonName : IPersonName
+    {
+        #region Constructor
+        public PersonName()
+        {
+        }
+        #endregion
+ 
+        #region Properties
+        /// <summary>
+        /// The persons first name.
+        /// </summary>
+        public String FirstName { get; set; }
+ 
+        /// <summary>
+        /// The persons Middle Name(s). Some people have multiple middle names.
+        /// So as many middle names as desired can be added.
+        /// </summary>
+        public List MiddleNames
+        {
+            get
+            {
+                if (null == _MiddleNames)
+ 
+                    _MiddleNames = new List();
+                return _MiddleNames;
+            }
+            set { _MiddleNames = value; }
+        } private List _MiddleNames;
+ 
+        public String LastName { get; set; }
+        #endregion
+ 
+        #region Methods
+        /// <summary>
+        /// Converts the name to a string.
+        /// </summary>
+        public override string ToString()
+        {
+            return ToString(NameOrder.LastNameCommaFirstName);
+        }
+ 
+        ///<summary>
+        /// Converts the name to a string.
+        /// </summary>
+        ///
+        ///
+        private String ToString(NameOrder inOrder)
+        {
+            switch (inOrder)
+            {
+                case NameOrder.LastNameCommaFirstName:
+                    return LastName + ", " + FirstName;
+ 
+                case NameOrder.LastNameCommaFirstNameWithMiddleNames:
+                    return LastName + ", " + FirstName + " " + MiddleNamesToString();
+ 
+                case NameOrder.FirstNameSpaceLastname:
+                    return FirstName + " " + LastName;
+ 
+                case NameOrder.FirstNameMiddleNamesLastname:
+                    return FirstName + MiddleNamesToString() + LastName;
+ 
+                default:
+                    return LastName + ", " + FirstName;
+            }
+        }
+ 
+        /// <summary>
+        /// Converts the list of middle names to a single string.
+        /// </summary>
+        /// String
+        private String MiddleNamesToString()
+        {
+            StringBuilder builder = new StringBuilder();
+ 
+            bool firstTimeThrough = true;
+            foreach (var name in MiddleNames)
+            {
+                if (firstTimeThrough)
+                    firstTimeThrough = false;
+                else
+                    builder.Append(" ");
+                builder.Append(name);
+            }
+            return builder.ToString();
+        }
+ 
+        /// <summary>
+        /// Compares the object passed in to see if it is a Person.
+        /// </summary>
+        ///
+        /// True if FirstName and LastName and MiddleNames match, False if the object
+        /// is not a Person or FirstName and LastName and MiddleNames do not match
+        public override bool Equals(object inObject)
+        {
+            PersonName p = inObject as PersonName;
+            if (null == p)
+                return false;
+            else
+                return Equals(p);
+        }
+ 
+        /// <summary>
+        /// Compares one PersonName to another PersonName.
+        /// </summary>
+        public bool Equals(IPersonName inPersonName)
+        {
+            return inPersonName.FirstName.Equals(FirstName, StringComparison.CurrentCultureIgnoreCase)
+                && inPersonName.LastName.Equals(LastName, StringComparison.CurrentCultureIgnoreCase);
+        }
+ 
+        /// <summary>
+        /// Compares a string to see if it matches a person.
+        /// </summary>
+        public bool Equals(String inString)
+        {
+            string tmpLastNameCommaFirstName = ToString(NameOrder.LastNameCommaFirstName);
+            string tmpLastNameCommaFirstNameWithMiddleNames = ToString(NameOrder.LastNameCommaFirstNameWithMiddleNames);
+            string tmpFirstNameSpaceLastname = ToString(NameOrder.FirstNameSpaceLastname);
+            string FirstNameMiddleNamesLastname = ToString(NameOrder.FirstNameMiddleNamesLastname);
+ 
+            return tmpLastNameCommaFirstName.Equals(inString, StringComparison.CurrentCultureIgnoreCase)
+                || tmpLastNameCommaFirstNameWithMiddleNames.Equals(inString, StringComparison.CurrentCultureIgnoreCase)
+                || tmpFirstNameSpaceLastname.Equals(inString, StringComparison.CurrentCultureIgnoreCase)
+                || FirstNameMiddleNamesLastname.Equals(inString, StringComparison.CurrentCultureIgnoreCase);
+        }
+ 
+        ///
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        #endregion
+ 
+        #region Enums
+        /// <summary>
+        /// The order of the names when converted to a string.
+        /// </summary>
+        public enum NameOrder
+        {
+            LastNameCommaFirstName = 0,
+            LastNameCommaFirstNameWithMiddleNames,
+            FirstNameSpaceLastname,
+            FirstNameMiddleNamesLastname
+        }
+        #endregion
+    }
+}
+~~~
+Ok, so in a separate test project, the following corresponding test class can be created.
+
+**PersonNameTest.cs**
+~~~
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PersonExample;
+ 
+namespace PersonExample_Test
+{
+    /// <summary>
+    ///This is a test class for PersonNameTest and is intended
+    ///to contain all PersonNameTest Unit Tests
+    ///</summary>
+    [TestClass()]
+    public class PersonNameTest
+    {
+        #region PersonName()
+        /// <summary>
+        ///A test for PersonName Constructor
+        ///</summary>
+        [TestMethod()]
+        public void PersonName_ConstructorTest()
+        {
+            PersonName person = new PersonName();
+            Assert.IsNotNull(person);
+            Assert.IsInstanceOfType(person, typeof(PersonName));
+            Assert.IsNull(person.FirstName);
+            Assert.IsNull(person.LastName);
+            Assert.IsNotNull(person.MiddleNames);
+        }
+        #endregion
+ 
+        #region Equals(Object inObject)
+        /// <summary>
+        ///A test for Equals(Object inObject) with matching first and last names
+        ///</summary>
+        [TestMethod()]
+        public void Equals_Obj_Test_Matching_First_Last_Names()
+        {
+            PersonName target = new PersonName() { FirstName = "John", LastName = "Johnson" };
+            object inObject = new PersonName() { FirstName = "John", LastName = "Johnson" };
+            bool expected = true;
+            bool actual = target.Equals(inObject);
+            Assert.AreEqual(expected, actual);
+        }
+ 
+        /// <summary>
+        ///A test for Equals(Object inObject) with different last name
+        ///</summary>
+        [TestMethod()]
+        public void Equals_Obj_Test_Matching_Different_Last_Names()
+        {
+            PersonName target = new PersonName() { FirstName = "John", LastName = "Johnson" };
+            object inObject = new PersonName() { FirstName = "John", LastName = "Jameson" };
+            bool expected = false;
+            bool actual = target.Equals(inObject);
+            Assert.AreEqual(expected, actual);
+        }
+ 
+        /// <summary>
+        ///A test for Equals(Object inObject) with different first name
+        ///</summary>
+        [TestMethod()]
+        public void Equals_Obj_Test_Matching_Different_First_Names()
+        {
+            PersonName target = new PersonName() { FirstName = "John", LastName = "Johnson" };
+            object inObject = new PersonName() { FirstName = "James", LastName = "Johnson" };
+            bool expected = false;
+            bool actual = target.Equals(inObject);
+            Assert.AreEqual(expected, actual);
+        }
+ 
+        /// <summary>
+        ///A test for Equals(Object inObject) when a null is passed in.
+        ///</summary>
+        [TestMethod()]
+        public void Equals_Obj_Test_Null()
+        {
+            PersonName target = new PersonName();
+            object inObject = null;
+            bool expected = false;
+            bool actual;
+            actual = target.Equals(inObject);
+            Assert.AreEqual(expected, actual);
+        }
+        #endregion
+ 
+        #region Equals(String inString)
+        /// <summary>
+        ///A test for Equals(String inString) where inString is null
+        ///</summary>
+        [TestMethod()]
+        public void Equals_String_Test_null()
+        {
+            PersonName target = new PersonName() { FirstName = "Tom", LastName = "Tomison" };
+            string inString = null;
+            bool expected = false;
+            bool actual;
+            actual = target.Equals(inString);
+            Assert.AreEqual(expected, actual);
+        }
+ 
+        /// <summary>
+        ///A test for Equals(String inString) where inString is a match using
+        ///PersonName.NameOrder.FirstNameSpaceLastname
+        ///</summary>
+        [TestMethod()]
+        public void Equals_String_Test_FirstNameSpaceLastname_Match()
+        {
+            PersonName target = new PersonName() { FirstName = "Tom", LastName = "Tomison" };
+            string inString = "Tom Tomison";
+            bool expected = true;
+            bool actual;
+            actual = target.Equals(inString);
+            Assert.AreEqual(expected, actual);
+        }
+ 
+        /// <summary>
+        ///A test for Equals(String inString) where inString is a match using
+        ///PersonName.NameOrder.LastNameCommaFirstName
+        ///</summary>
+        [TestMethod()]
+        public void Equals_String_Test_LastNameCommaFirstName_Match()
+        {
+            PersonName target = new PersonName() { FirstName = "Tom", LastName = "Tomison" };
+            string inString = "Tomison, Tom";
+            bool expected = true;
+            bool actual;
+            actual = target.Equals(inString);
+            Assert.AreEqual(expected, actual);
+        }
+        #endregion
+ 
+        // TODO: Finish testing this object
+ 
+    }
+}
+~~~
+For more learning, answer the following questions:
+
+1. What functions are Unit Tested?
+2. What is the code coverage of this Unit Test? (What percent of the Code is Unit Tested?)
+3. You have an enum with twenty items in it. One function has a switch on the enum with all twenty possibilities. The cyclomatic complexity appears to be high and is causing a red flag? Should you change your code? Why or Why not?
+4. Assume you finish the unit test so that the code is 100% covered. What reasons exist for needing still more tests on that code?
