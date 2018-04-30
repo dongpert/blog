@@ -4,13 +4,15 @@ tags:
 ---
 A delegate is a type that safely encapsulates a method, similar to a function pointer in C and C++. Unlike C function pointers, delegates are object-oriented, type safe, and secure. The type of a delegate is defined by the name of the delegate. The following example declares a delegate named Del that can encapsulate a method that takes a string as an argument and returns void:
 
-대리자는 메서드를 안전하게 캐슐화하는 형식입니다. C 그리고 C++에 함수 포인터와 유사합니다. C 함수 포인터와는 달리 대리자는 객체 지향적, 타입에 안전, 안전합니다. 대리자의 형식은 대리자 이름으로 정의됩니다.
+대리자는 메서드를 안전하게 캡슐화하는 형식입니다. C 그리고 C++에 함수 포인터와 유사합니다. C 함수 포인터와는 달리 대리자는 객체 지향적, 타입에 안전하고 보안에 안전합니다. 대리자의 형식은 대리자 이름으로 정의됩니다. 다음 예제는 인수로 문자열을 취하고 void를 반환하는 메서드를 캡슐화 할수 있는 Del이라는 이름의 대리자를 선언합니다.
 
 ~~~
 public delegate void Del(string message);
 ~~~
 
 A delegate object is normally constructed by providing the name of the method the delegate will wrap, or with an anonymous Method. Once a delegate is instantiated, a method call made to the delegate will be passed by the delegate to that method. The parameters passed to the delegate by the caller are passed to the method, and the return value, if any, from the method is returned to the caller by the delegate. This is known as invoking the delegate. An instantiated delegate can be invoked as if it were the wrapped method itself. For example:
+
+대리자 객체는 보통 대리자가 감쌀 메서드의 이름을 제공하여 구성됩니다. 대리자가 인스턴스화 하면 대리자에 대한 메서드 호출은 대리자에 의해 메서드에 전달 될 것입니다. 호출자에 의해 대리자에 전달된 매개변수는 메서드에 전달되고 메서드에 반환값이 있다면 대리자에 의해 호출자가 반환됩니다.  
 
 ~~~
 // Create a method for a delegate.
@@ -27,7 +29,10 @@ Del handler = DelegateMethod;
 handler("Hello World");
 ~~~
 
-Delegate types are derived from the Delegate class in the .NET Framework. Delegate types are sealed—they cannot be derived from— and it is not possible to derive custom classes from Delegate. Because the instantiated delegate is an object, it can be passed as a parameter, or assigned to a property. This allows a method to accept a delegate as a parameter, and call the delegate at some later time. This is known as an asynchronous callback, and is a common method of notifying a caller when a long process has completed. When a delegate is used in this fashion, the code using the delegate does not need any knowledge of the implementation of the method being used. The functionality is similar to the encapsulation interfaces provide.
+Delegate types are derived from the Delegate class in the .NET Framework. Delegate types are sealed — they cannot be derived from — and it is not possible to derive custom classes from Delegate. Because the instantiated delegate is an object, it can be passed as a parameter, or assigned to a property. This allows a method to accept a delegate as a parameter, and call the delegate at some later time. This is known as an asynchronous callback, and is a common method of notifying a caller when a long process has completed. When a delegate is used in this fashion, the code using the delegate does not need any knowledge of the implementation of the method being used. The functionality is similar to the encapsulation interfaces provide.
+
+대리자 형식은 닷넷 프레임워크에 대리자 클래스에서 파생됩니다. 대리자 형식은 봉인되어 있고 대리자에서 사용자 지정 클래스를 파생할 수 없습니다. 인스턴스화된 대리자는 객체이기 
+때문에 매개변수로 전달될 수 있고 속성에 할당될 수 있습니다. 매서드가 대리자를 매개변수로 받아들이고 나중에 대리자를 호출하는 것을 허용합니다. 비동기 콜백으로 알려져 있습니다. 그리고 긴 프로세스가 완료되면 호출자에게 알림의 흔한 방법입니다. 이런 방식으로 대리자가 사용되면 대리자를 사용하는 코드는 사용되고 있는 메서드의 구현에 대해 어떤 지식도 필요없습니다. 이 기능은 캡슐화 인터페이스가 제공하는 것과 비슷합니다.
 
 Another common use of callbacks is defining a custom comparison method and passing that delegate to a sort method. It allows the caller's code to become part of the sort algorithm. The following example method uses the Del type as a parameter:
 
