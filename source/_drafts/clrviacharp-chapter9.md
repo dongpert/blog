@@ -116,32 +116,67 @@ public sealed class Program {
 }
 ~~~
 
-out이나 ref 키워드를 참조 타입과 함께 사용하면 이미 알려진 객체의 참조 값을 반환하려는 경우에만 유용하게 사용된다.
+참조 타입의 경우, 호출하는 측은 참조 객체를 가리키는 포인터를 메모리에 할당하고, 호출되는 측은 이 포인터를 조작할 수 있다. 이러한 동작 때문에, out이나 ref 키워드를 참조 타입과 함께 사용하면 이미 알려진 객체의 참조 값을 반환하려는 경우에만 유용하게 사용된다.
 ~~~
 using System;
 using System.IO;
 
 public sealed class Program {
     public static void Main() {
-        FileStream fs = null;
+        FileStream fs = null;       // fs는 초기화되지 않았다.
         
-        ProcessingFiles(out fs);
+        // 처리할 첫 번째 파일을 연다.
+        StartProcessingFiles(out fs);
 
-        for (; fs != null; ProcessFiles(ref fs)) {
+        // 처리할 파일이 더 있는지 확인하여 계속 반복한다.
+        for (; fs != null; ContinueProcessFiles(ref fs)) {
+            // 파일을 처리한다.
             fs.Read(...);
         }
     }
 
-    private static void ProcessFiles(ref FileStream fs) {
-        if (fs != null) fs.Close();
+    private static void StartProcessingFiles(out FileStream fs) {
+        fs = new FileStream(...);   // 이 메서드에서는 fs가 반드시 초기화 되어야 한다.
+    }
+
+    private static void ContinueProcessFiles(ref FileStream fs) {
+        fs.Close();
 
         if (noMoreFileToProcess) fs = null;
         else fs = new FileStream(...);
     }
 }
 ~~~
+보시다시피 out과 ref 키워드가 지정된 참조 타입의 매개변수를 취하는 메서드의 가장 큰 차이점은 이 메서드가 새로운 객체를 생성하고 새로운 객체를 가리키는 포인터를 호출하는 측으로 반환한다는 것이다. 앞의 코드를 다음과 같이 단순하게 쓸수도 있다.
+~~~
+using System;
+using System.IO;
 
-제네릭을 사용한 Swap메서드
+public sealed class Program {
+    public static void Main() {
+        FileStream fs = null;       // null로 꼭 설정해주어야 한다.
+        
+        // 처리할 첫 번째 파일을 연다.
+        ProcessingFiles(ref fs);
+
+        // 처리할 파일이 더 있는지 확인하여 계속 반복한다.
+        for (; fs != null; ProcessFiles(ref fs)) {
+            // 파일을 처리한다.
+            fs.Read(...);
+        }
+    }
+
+    private static void ProcessFiles(ref FileStream fs) {
+        // 만약 파일이 열렸던 적이 있다면 파일을 닫는다.
+        if (fs != null) fs.Close();
+
+        // 처리할 다음 파일을 열거나, 처리할 파일이 없으면 null을 반환한다.
+        if (noMoreFileToProcess) fs = null;
+        else fs = new FileStream(...);
+    }
+}
+~~~
+제네릭을 사용하도록 하면 여러분이 원하는 대로 잘 작동하는 코드를 만들 수 있다. Swap 메서드를 다음과 같이 수정할 수 있다.
 ~~~
 public static void Swap<T>(ref T a, ref T b) {
     T t = b;
@@ -160,6 +195,7 @@ public static void SomeMethod() {
 ~~~
 
 ### 메서드에 가변 매개변수 전달하기
+가변 매개변수를 받을 수 있도록 메서드를 정의하는 방법은 다음과 같다.
 ~~~
 static Int32 Add(params Int32[] values) {
     Int32 sum = 0;
@@ -177,6 +213,7 @@ public static void Main() {
     Console.WriteLine(Add(null));   // null이 전달되며 객체 생성이 없으므로 더 효율적이다.
 }
 ~~~
+> **중요**: 메서드에 가변 매개변수를 전달하는 경우에는 null을 전달하지 않는 한 추가적인 성능 저하가 있을 수 있음을 알고 있어야 한다. 결국 힙에는 배열 객체가 반드시 할당되어야 하고, 배열의 각 요소들 역시 초기화되어야 하며 궁극적으로 배열의 메모리들도 가비지 컬렉션의 대상이 될 것이기 때문이다. 성능 상의 손해를 최소화하기 위해서는 params 키워드를 사용한 메서드가 호출 되지 않도록 자주 사용될 가능성이 있는 패턴들을 이미 오버로드의 형태로 구현해주는 것이 좋다.
 
 ### 매개변수 타입과 반환 타입에 대한 지침
 메서드의 매개변수 타입을 정의할 때에는 가능한 가장 상위의 추상화된 타입(Weakest Type)이나 인터페이스 타입을 사용하는 것이 좋다. 예를 들어 만약 컬렉션의 아이템을 다루는 메서드를 만들어야 한다면 List<T>, ICollection<T>, IList<T>같이 구체화된 타입(Strong Type)들보다는 이보다 좀 추상적인 IEnumerable<T> 인터페이스 같은 타입을 매개변수의 타입으로 선택하는 것이 보다 바람직하다.
@@ -192,6 +229,7 @@ public void ManipulateItems<T>(List<T> collection) { ... }
 
 당연한 이야기이지만, 단순히 열거 가능한 객체가 아니라 정말로 리스트를 필요로 하는 경우도 있을 수 있지만, 이 경우에도 List<T> 대신 IList<T>를 사용하는 것이 좋다.
 
+참고로 앞의 예제에서 살펴본 컬렉션들은 인터페이스 아키텍처를 이용한 설계 규칙에 따라 정의된 컬렉션에 대한 것들이다. 하지만 상속의 특성을 이용하는 클래스 아키텍처 설계 규칙에 따라 정의된 클래스들을 사용하는 경우에도 동일한 규칙을 사용할 수 있다. 예를 들어 스트림으로부터 바이트를 읽어 처리하는 메서드를 작성하려는 경우, 다음과 같이 코드를 작성할 수 있다.
 ~~~
 // 권장됨: 이 메서드는 추상화된 타입의 매개변수를 취한다.
 public void ProcessBytes(Stream someStream) { ... }
