@@ -54,3 +54,52 @@ private static void Operators() {
 * 이항 연산자(+, -, *, /, %, |, ^, <<, >>): 만약 양쪽 오퍼랜드가 모두 null이면 결과도 null이다. 하지만 논리 연산자(&r과 |)에 대해서는 예외적인 규칙이 있는데, SQL에서의 3진 논리(Three-valued Logic)와 같은 규칙을 가진다.
 * 동일 비교 연산자(==, !=): 만약 양쪽 오퍼랜드가 모두 null이면 동일한 것으로 간주한다.
 * 대소 비교 연산자(<, >, <=, >=): 만약 양쪽 오퍼랜드가 모두 null이면 결과는 false가 되며, 양쪽 오퍼랜드가 모두 null이 아니라면 값의 대소를 비교한다.
+
+## C#의 Null 결합 연산자
+C#은 **Null 결합 연산자**(Null-Coalescing Operator)라고 부르는 연산자를 지원하는데 두 개의 오퍼랜드를 필요로 한다.
+
+Null 결합 연산자는 참조 타입뿐만 아니라 Nullable 값 타입에 대해서도 사용할 수 있는 멋진 기능이다. 다음은 Null 결합 연산자를 사용하는 예다.
+~~~
+private static void NullCoaleacingOperator() {
+    Int32? b = null;
+
+    Int32 x = b ?? 123;
+    Console.WriteLine(x);
+
+    String filename = GetFilename() ?? "Untitled";
+}
+~~~
+Null 결합 연산자는 두가지 면에서 문법적 발전을 제안하고 있다. Null 결합 연산자는 다음과 같은 표현식에서도 잘 작동한다.
+~~~
+Func<String> f = () => SomeMethod() ?? "Untitled";
+~~~
+그리고 Null 결합 연산자는 중첩 사용할 때에도 이점도 있다.
+~~~
+String s = SomeMethod1() ?? SomeMethod2() ?? "Untitled";
+~~~
+
+## CLR의 Nullable 값 타입에 대한 특별한 배려
+### Nullable 값 타입에 대한 박싱
+CLR이 Nullable<T> 인스턴스를 박싱해야 할 경우, 해당 인스턴스의 상태가 null인지 확인하여, 만약 그렇다면 CLR은 실제로 아무것도 박싱하지 않은 채로 null 참조를 반환한다. 만약 null 상태가 아니라면, CLR은 실제 값을 꺼내서 원래대로 박싱을 수행한다.
+### Nullable 값 타입의 언박싱
+CLR은 박싱된 값 타입 T를 언박싱하거나 Nullable<T>로 변환하는 것을 허용한다. 만약 박싱된 값 타입의 참조가 null이면 Nullable<T> 타입을 언박싱하려 할 때, null 상태로 설정하게 된다. 다음의 코드에서 이러한 동작의 예를 들고 있다.
+~~~
+Object o = 5;
+
+Int32 a = (Int32?) o;
+Int32 b = (Int32) o;
+
+o = null;
+
+a = (Int32?) o;     // a = null
+b = (Int32) o;      // NullReferenceException
+~~~
+### Nullable 값 타입에 대한 GetType 메서드 호출
+NullType<T> 객체는 GetType 메서드를 호출하면 CLR은 해당 객체의 타입이 Nullable<T> 타입이 아니라 T 타입이라고 결과를 바꿔서 돌려준다.
+### Nullable 값 타입을 통한 인터페이스 메서드 호출
+다음 코드를 살펴보면 Nullable<Int32> 타입의 변수 n을 IComparable<Int32> 인터페이스 타입의 변수로 캐스티앟고 있다. 하지만 Int32 타입은 IComparable<Int32>를 구현하고 있지만 Nullable<T> 타입은 IComparable<Int32> 인터페이스를 구현하고 있지 않다. C# 컴파일러는 그럼에도 불구하고 이러한 코드를 컴파일할 수 있도록 기능을 내장하고 있어서 다음과 같이 코드를 작성할 수 있다.
+~~~
+Int32? n = 5;
+Int32 result = ((IComparable) n).CompareTo(5);  // 컴파일과 실행에 문제가 없다.
+Console.WriteLine(result);
+~~~
