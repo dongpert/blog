@@ -4,7 +4,7 @@ tags:
 ---
 In versions of C# before 2.0, the only way to declare a delegate was to use named methods. C# 2.0 introduced anonymous methods and in C# 3.0 and later, lambda expressions supersede anonymous methods as the preferred way to write inline code. However, the information about anonymous methods in this topic also applies to lambda expressions. There is one case in which an anonymous method provides functionality not found in lambda expressions. Anonymous methods enable you to omit the parameter list. This means that an anonymous method can be converted to delegates with a variety of signatures. This is not possible with lambda expressions. For more information specifically about lambda expressions, see Lambda Expressions.
 
-C# 2.0 버전 이전에 대리자를 선언하기 위한 유일한 바업은 명명된 메서드를 사용하는 것 이었습니다. C# 2.0은 익명 메서드를 소개했고 C# 3.0 이상에서는, 람다 식이 인라인 코드를 작성하는 선호하는 방식으로 익명 메서드를 대체합니다. 그러나 이 주제에서 익명 메서드에 관한 정보는 람다 식에도 적용됩니다. 익명 메서드가 람다 식에서 찾을 수 없는 기능을 제공하는 경우가 하나 있습니다. 익명 메서드는 매개변수 항목을 생략하는것을 허용합니다. 익명 메서드는 다양한 시그니처의 대리자로 변환 될수 있다는 것을 의미합니다. 이것은 람다 식으로는 불가능 합니다.
+C# 2.0 버전 이전에 대리자를 선언하기 위한 유일한 방법은 명명된 메서드를 사용하는 것 이었습니다. C# 2.0은 익명 메서드를 소개했고 C# 3.0 이상에서는, 람다 식이 인라인 코드를 작성하는 선호하는 방식으로 익명 메서드를 대체합니다. 그러나 이 주제에서 익명 메서드에 관한 정보는 람다 식에도 적용됩니다. 익명 메서드가 람다 식에서 찾을 수 없는 기능을 제공하는 경우가 하나 있습니다. 익명 메서드는 매개변수 항목을 생략하는것을 허용합니다. 익명 메서드는 다양한 시그니처의 대리자로 변환 될수 있다는 것을 의미합니다. 이것은 람다 식으로는 불가능 합니다.
 
 Creating anonymous methods is essentially a way to pass a code block as a delegate parameter. Here are two examples:
 
@@ -25,7 +25,7 @@ Del d = delegate(int k) { /* ... */ };
 ~~~
 By using anonymous methods, you reduce the coding overhead in instantiating delegates because you do not have to create a separate method.
 
-익명 메서드를 사용하면 별도의 메서드를 생성하지 않아도 되기 땜누에 대리자 초기화에서 코딩 오버헤드를 감소시킵니다.
+익명 메서드를 사용하면 별도의 메서드를 생성하지 않아도 되기 때문에 대리자 초기화에서 코딩 오버헤드를 감소시킵니다.
 
 For example, specifying a code block instead of a delegate can be useful in a situation when having to create a method might seem an unnecessary overhead. A good example would be when you start a new thread. This class creates a thread and also contains the code that the thread executes without creating an additional method for the delegate.
 
