@@ -127,7 +127,12 @@ private static void TupleTypes() {
     Console.WriteLine("Min={0}, Max{1}", minmax.Item1, minmax.Item2);
 }
 ~~~
-컴파일러는 제네릭 메서드를 
+컴파일러는 제네릭 메서드를 호출할 때에만 제네릭 타입을 유추할 수 있으며, 생성자를 호출할 때는 그렇지 않다. 이런 이유로, System 네임스페이스에는 매개변수로 제네릭 타입을 유추할 수 있는 여러 개의 정적 Create 메서드를 포함하고 있다. 이 클래스는 Tuple 객체를 생성하는 팩토리처럼 동작하는데, 단순히 코드를 단순화하기 위해서 존재하는 것뿐이다. 다음에 정적 Tuple 클래스를 이용하여 앞서 보여준 MinMax 예제를 다시 작성하였다.
+~~~
+private static Tuple<Int32, Int32> MinMax(Int32 a, Int32 b) {
+    return Tuple.Create(Math.Min(a, b), Math.Max(a, b));    // 더 단순한 문법
+}
+~~~
 
 ### 매개변수가 있는 속성
 C#에서는 매개변수가 있는 속성(인덱서)을 마치 배열과 같은 문법으로 사용할 수 있도록 해주고 있다. 달리 표현하면, 인덱서는 C# 개발자가 [] 연산자를 오버로딩하는 또 다른 방법으로 생각할 수 있다.
