@@ -49,18 +49,18 @@ public static class Progrm {
             l = null;   // 가비지 수집기에 의해 메모리 회수가 발생하도록 한다.
         }
 
-        using (new OperationTimer("ArrayList of Int32")) {
+        using (new OperationTimer("ArrayList of String")) {
             ArrayList a = new ArrayList();
             for (Int32 n = 0; n < count; n++) {
                 a.Add("X");                 // 참조복사
-                String x = (String a[n];    // 타입변환 및 참조 복사
+                String x = (String) a[n];    // 타입변환 및 참조 복사
             }
             a = null;   // 가비지 수집기에 의해 메모리 회수가 발생하도록 한다.
         }
     }
 
     // 실행 속도를 측정하기 위하여 사용할 수 있는 유틸리티 클래스다.
-    internal sealed sealed class OperationTimer : IDisposable {
+    internal sealed class OperationTimer : IDisposable {
         private Stopwatch m_stopwatch;
         private String m_text;
         private Int32 m_collectionCount;
