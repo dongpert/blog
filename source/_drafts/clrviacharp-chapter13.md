@@ -11,11 +11,14 @@ Object의 메서드들은 마이크로소프트사의 누군가 구현하였기 
 인터페이스는 메서드 원형들의 집합에 이름을 붙인 것이다. 인터페이스에는 메서드 외에 이벤트, 매개변수 없는 속성, C#의 인덱서와 같이 매개변수 받는 속성 등이 포함될수도 있는데, 결국 메서드를 지칭하기 위한 구문상 편의사항이기 때문이다. 그러나 인터페이스는 생성자 메서드를 정의할 수 없으며 인스턴스 필드들도 정의할 수 없다.
 
 ### 인터페이스 상속하기
+MSCorLib.DLL 안에 System.IComparable\<T\> 인터페이스는 다음과 같이 정의되어 있다.
 ~~~
 public interface IComparable<in T> {
     Int32 CompareTo(T other);
 }
-
+~~~
+다음의 코드는 이 인터페이스를 구현하는 타입을 어떻게 정의하는지를 보여주고, 그리고 두 개의 Point 객체를 비교하는 방법을 표현한 코드다.
+~~~
 public sealed class Point : IComparable<Point> {
     private Int32 m_x, m_y;
 
@@ -40,7 +43,7 @@ public static class Program {
             new Point(1, 2)
         };
 
-        if (points[0].COmpareTo(points[1]) > 0) {
+        if (points[0].CompareTo(points[1]) > 0) {
             Point tempPoint = points[0];
             points[0] = points[1];
             points[1] = tempPoint;
@@ -52,7 +55,7 @@ public static class Program {
     }
 }
 ~~~
-C# 컴파일러는 인터페이스 메서드를 구현할 때 public으로 선언하도록 요구한다. CLR은 인터페이스 메서드가 virtual로 정의할 것을 요구한다. 만약 소스 코드에서 메서드를 구현할 때 명시적으로 virtual 키워드를 사용하지 않으면 컴파일러가 해당 메서드에 virtual 키워드와 sealed 키워드를 포함시키며, 이 경우 이 클래스를 상속한 다른 클래스에서 인터페이스 메서드를 재정의 할 수 없다. 만약 명시적으로 메서드에 virtual 키워드를 지정하면 해당 클래스를 상속한 다른 클래스에서 인터페이스 메서드를 재정의할 수 있다.
+C# 컴파일러는 인터페이스 메서드를 구현할 때 public으로 선언하도록 요구한다. CLR은 인터페이스 메서드가 virtual로 정의할 것을 요구한다. **만약 소스 코드에서 메서드를 구현할 때 명시적으로 virtual 키워드를 사용하지 않으면 컴파일러가 해당 메서드에 virtual 키워드와 sealed 키워드를 포함시키며, 이 경우 이 클래스를 상속한 다른 클래스에서 인터페이스 메서드를 재정의 할 수 없다. 만약 명시적으로 메서드에 virtual 키워드를 지정하면 해당 클래스를 상속한 다른 클래스에서 인터페이스 메서드를 재정의할 수 있다.**
 
 인터페이스 메서드를 구현할 때 sealed가 포함된 경우, 이 클래스를 상속한 클래스에서는 메서드를 재정의할 수 없다고 하였다. 하지만 이 클래스를 상속한 다른 클래스는 또 다시 동일 인터페이스를 상속받아 구현함으로써 자체적으로 새로운 메서드를 구현할 수는 있다. 이 경우 해당 객체에 대해서 인터페이스를 통해 메서드를 호출하면, 객체의 타입과 연결된 메서드를 호출하게 된다.
 
@@ -89,7 +92,7 @@ public static class Program {
 }
 
 internal class Base : IDisposable {
-    // 이 메서드는 암묵적으로 seald되었으며 재정의가 불가능하다.
+    // 이 메서드는 암묵적으로 sealed되었으며 재정의가 불가능하다.
     public void Dispose() {
         Console.WriteLine("Base's Dispose");
     }
@@ -102,7 +105,7 @@ internal class Derived : Base, IDisposable {
     new public void Dispose() {
         Console.WriteLine("Derived's Dispose");
 
-        // 참고: 필요한 경우 다음 줄과 같이 코드를 작성하여 부모 클래스의 Dispose 메서드를 호출할 수 있따.
+        // 참고: 필요한 경우 다음 줄과 같이 코드를 작성하여 부모 클래스의 Dispose 메서드를 호출할 수 있다.
         // base.Dispose();
     }
 }
