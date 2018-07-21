@@ -19,13 +19,13 @@ interface IEquatable<T>
     bool Equals(T obj);
 }
 ~~~
-Any class or struct that implements the IEquatable<T> interface must contain a definition for an Equals method that matches the signature that the interface specifies. As a result, you can count on a class that implements IEquatable<T> to contain an Equals method with which an instance of the class can determine whether it's equal to another instance of the same class.
+Any class or struct that implements the IEquatable\<T\> interface must contain a definition for an Equals method that matches the signature that the interface specifies. As a result, you can count on a class that implements IEquatable\<T\> to contain an Equals method with which an instance of the class can determine whether it's equal to another instance of the same class.
 
-IEquatable\<T\> 인터페이스를 구현하는 어떤 클래스 또는 구조체는 인터페이스가 명시하는 시그니처와 일치하는 Equals 메서드에 대한 구현을 포함해야만 합니다. 결과적으로 클래스의 인스턴스가 같은 클래스의 다른 인스터스와 같은지 여부를 확인할 수 있는 Equals 메서드를 포함시키기 위해 IEquatable\<T\>를 구현하는 클래스에 의지할 수 있습니다.
+IEquatable\<T\> 인터페이스를 구현하는 모든 클래스 또는 구조체는 인터페이스가 명시하는 시그니처와 일치하는 Equals 메서드에 대한 구현을 포함해야만 합니다. 결과적으로 클래스의 인스턴스가 같은 클래스의 다른 인스터스와 같은지 여부를 확인할 수 있는 Equals 메서드를 포함시키기 위해 IEquatable\<T\>를 구현하는 클래스에 의지할 수 있습니다.
 
-The definition of IEquatable<T> doesn’t provide an implementation for Equals. The interface defines only the signature. In that way, an interface in C# is similar to an abstract class in which all the methods are abstract. However, a class or struct can implement multiple interfaces, but a class can inherit only a single class, abstract or not. Therefore, by using interfaces, you can include behavior from multiple sources in a class.
+**The definition of IEquatable<T> doesn’t provide an implementation for Equals. The interface defines only the signature.** In that way, an interface in C# is similar to an abstract class in which all the methods are abstract. However, a class or struct can implement multiple interfaces, but a class can inherit only a single class, abstract or not. Therefore, by using interfaces, you can include behavior from multiple sources in a class.
 
-IEquatable\<T\>의 정의는 Equals에 대한 구현을 제공하지 않습니다. 인터페이스는 시그니처만 정의합니다. 이런식으로 C#에 인터페이스는 모든 메서드가 추상인 추상클래스와 비슷합니다. 그러나 클래스 또는 구조체는 다중 인터페이스를 구현할 수 있습니다. 그러나 클래스는 추상이거나 아닌 단일 클래스만 상속할 수 있습니다. 그러므로 인터페이스를 사용하면 클래스에 여러 소스에 동작들을 포함시킬 수 있습니다.
+IEquatable\<T\>의 정의는 Equals에 대한 구현을 제공하지 않습니다. 인터페이스는 시그니처만 정의합니다. 이런식으로 C#에 인터페이스는 모든 메서드가 abstract인 추상클래스와 비슷합니다. 그러나 클래스 또는 구조체는 다중 인터페이스를 구현할 수 있습니다. 그러나 클래스는 추상이거나 아닌 단일 클래스만 상속할 수 있습니다. 그러므로 인터페이스를 사용하면 클래스에 여러 소스에 동작들을 포함시킬 수 있습니다.
 
 For more information about abstract classes, see Abstract and Sealed Classes and Class Members.
 
@@ -33,7 +33,7 @@ Interfaces can contain methods, properties, events, indexers, or any combination
 
 인터페이스는 메서드, 속성, 이벤트, 인덱서, 또는 이러한 4개 멤버 형식의 어떤 조합이라도 포함할 수 있습니다. 인터페이스는 상수, 필드, 연산자, 인스턴스 생성자, 소멸자, 또는 형식을 포함할 수 없습니다. 인터페이스 멤버는 자동적으로 공용입니다. 그리고 어떤 접근 한정자를 포함할 수 없습니다. 멤버는 정적일 수 없습니다.
 
-To implement an interface member, the corresponding member of the implementing class must be public, non-static, and have the same name and signature as the interface member.
+**To implement an interface member, the corresponding member of the implementing class must be public, non-static, and have the same name and signature as the interface member.**
 
 인터페이스 멤버를 구현하기 위해 구현하는 클래스의 해당하는 멤버는 공용, 비정적, 그리고 인터페이스와 동일한 이름 및 시그니처를 가져야 합니다. 
 
@@ -63,7 +63,7 @@ public class Car : IEquatable<Car>
     }
 }
 ~~~
-Properties and indexers of a class can define extra accessors for a property or indexer that's defined in an interface. For example, an interface might declare a property that has a get accessor. The class that implements the interface can declare the same property with both a get and set accessor. However, if the property or indexer uses explicit implementation, the accessors must match. For more information about explicit implementation, see Explicit Interface Implementation and Interface Properties.
+Properties and indexers of a class can define extra accessors for a property or indexer that's defined in an interface. For example, an interface might declare a property that has a get accessor. The class that implements the interface can declare the same property with both a get and set accessor. **However, if the property or indexer uses explicit implementation, the accessors must match. For more information about explicit implementation, see Explicit Interface Implementation and Interface Properties.**
 
 클래스의 속성과 인덱서는 인터페이스에 정의되어 있는 속성이나 인덱서에 대한 추가 접근자를 정의할 수 있습니다. 예를 들어 인터페이스가 get 접근자를 가지는 속성을 선언할 수 있습니다. 인터페이스를 구현하는 클래스는 set과 get 접근자가 있는 같은 속성을 선언할 수 있습니다. 그러나 속성이나 인덱서는 명시적 구현을 사용한다면 접근자는 일치해야 합니다.
 
